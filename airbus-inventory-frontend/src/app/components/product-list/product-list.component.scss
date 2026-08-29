@@ -1,0 +1,37 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.username {
+  margin-right: 12px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.page-content {
+  padding: 24px;
+}
+
+.filter-bar {
+  margin-bottom: 8px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: #fff;
+}
+
+.low-stock {
+  color: #c62828;
+  font-weight: 600;
+}
+
+.no-data-cell {
+  text-align: center;
+  padding: 24px;
+  color: #666;
+}
