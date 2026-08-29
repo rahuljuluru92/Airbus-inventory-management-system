@@ -1,0 +1,20 @@
+.product-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.row-fields {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1 1 120px;
+    min-width: 0;
+  }
+}
