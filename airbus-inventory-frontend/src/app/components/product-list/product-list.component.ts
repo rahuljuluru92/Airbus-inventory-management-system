@@ -17,12 +17,13 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 })
 export class ProductListComponent implements OnInit, AfterViewInit {
 
-  displayedColumns = ['name', 'category', 'quantity', 'unitPrice', 'supplier', 'reorderLevel', 'actions'];
   dataSource = new MatTableDataSource<Product>([]);
   categories = PRODUCT_CATEGORIES;
   selectedCategory = '';
   loading = false;
   errorMessage: string | null = null;
+  isAdmin = false;
+  displayedColumns: string[] = [];
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -35,6 +36,9 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
+    const baseColumns = ['name', 'category', 'quantity', 'unitPrice', 'supplier', 'reorderLevel'];
+    this.displayedColumns = this.isAdmin ? [...baseColumns, 'actions'] : baseColumns;
     this.loadProducts();
   }
 

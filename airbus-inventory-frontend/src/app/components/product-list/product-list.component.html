@@ -28,7 +28,7 @@
       </mat-form-field>
     </div>
 
-    <div class="col-md-4 mb-2 text-md-end">
+    <div class="col-md-4 mb-2 text-md-end" *ngIf="isAdmin">
       <button mat-raised-button color="primary" (click)="openAddDialog()">
         <mat-icon>add</mat-icon>
         Add Product
