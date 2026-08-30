@@ -27,6 +27,10 @@ public class ProductService {
         return productRepository.findByCategory(category).stream().map(this::toResponse).toList();
     }
 
+    public List<ProductResponse> findLowStock() {
+        return productRepository.findLowStock().stream().map(this::toResponse).toList();
+    }
+
     public ProductResponse findById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + id));

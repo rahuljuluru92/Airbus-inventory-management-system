@@ -42,6 +42,12 @@ public class ProductRepository {
                 ROW_MAPPER, category);
     }
 
+    public List<Product> findLowStock() {
+        return jdbcTemplate.query(
+                "SELECT * FROM products WHERE quantity <= reorder_level ORDER BY (reorder_level - quantity) DESC",
+                ROW_MAPPER);
+    }
+
     public Optional<Product> findById(Long id) {
         List<Product> results = jdbcTemplate.query(
                 "SELECT * FROM products WHERE id = ?", ROW_MAPPER, id);

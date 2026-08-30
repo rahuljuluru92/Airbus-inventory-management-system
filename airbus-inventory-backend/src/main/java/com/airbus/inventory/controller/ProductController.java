@@ -30,6 +30,11 @@ public class ProductController {
         return productService.findByCategory(category);
     }
 
+    @GetMapping("/low-stock")
+    public List<ProductResponse> getLowStock() {
+        return productService.findLowStock();
+    }
+
     @GetMapping("/{id}")
     public ProductResponse getById(@PathVariable Long id) {
         return productService.findById(id);

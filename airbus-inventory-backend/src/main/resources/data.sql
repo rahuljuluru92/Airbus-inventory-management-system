@@ -21,7 +21,7 @@ INSERT INTO products (name, category, quantity, unit_price, supplier, reorder_le
 
 -- Landing Gear
 INSERT INTO products (name, category, quantity, unit_price, supplier, reorder_level) VALUES
-    ('Main Landing Gear Strut Assembly', 'Landing Gear', 6, 185000.00, 'Safran Landing Systems', 2),
+    ('Main Landing Gear Strut Assembly', 'Landing Gear', 6, 185000.00, 'Safran Landing Systems', 7),
     ('Nose Landing Gear Actuator', 'Landing Gear', 14, 22300.00, 'Liebherr Aerospace', 4),
     ('Landing Gear Wheel Hub Assembly', 'Landing Gear', 22, 8700.00, 'Safran Landing Systems', 6),
     ('Brake Control Unit', 'Landing Gear', 16, 19800.00, 'Meggitt PLC', 5),
@@ -34,11 +34,11 @@ INSERT INTO products (name, category, quantity, unit_price, supplier, reorder_le
 INSERT INTO products (name, category, quantity, unit_price, supplier, reorder_level) VALUES
     ('High-Pressure Turbine Blade', 'Engine Components', 120, 2800.00, 'CFM International', 30),
     ('Fan Blade Assembly', 'Engine Components', 34, 17600.00, 'Safran Aircraft Engines', 10),
-    ('Combustion Chamber Liner', 'Engine Components', 8, 64000.00, 'CFM International', 3),
+    ('Combustion Chamber Liner', 'Engine Components', 8, 64000.00, 'CFM International', 9),
     ('Fuel Injector Nozzle', 'Engine Components', 75, 1250.00, 'Woodward Inc.', 20),
     ('Engine Fire Detection Sensor', 'Engine Components', 42, 3100.00, 'Meggitt PLC', 12),
     ('Oil Pump Assembly', 'Engine Components', 19, 8900.00, 'Safran Aircraft Engines', 6),
-    ('Turbine Disc', 'Engine Components', 5, 98000.00, 'CFM International', 2),
+    ('Turbine Disc', 'Engine Components', 5, 98000.00, 'CFM International', 6),
     ('Engine Bleed Air Valve', 'Engine Components', 23, 6700.00, 'Honeywell Aerospace', 7);
 
 -- Cabin Interiors
