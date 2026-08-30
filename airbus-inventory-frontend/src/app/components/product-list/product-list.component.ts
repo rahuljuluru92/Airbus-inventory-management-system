@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,6 +21,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Product>([]);
   categories = PRODUCT_CATEGORIES;
   selectedCategory = '';
+  showLowStockOnly = false;
   loading = false;
   errorMessage: string | null = null;
   isAdmin = false;
@@ -56,9 +58,14 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.errorMessage = null;
 
-    const request = this.selectedCategory
-      ? this.productService.getByCategory(this.selectedCategory)
-      : this.productService.getAll();
+    let request: Observable<Product[]>;
+    if (this.showLowStockOnly) {
+      request = this.productService.getLowStock();
+    } else if (this.selectedCategory) {
+      request = this.productService.getByCategory(this.selectedCategory);
+    } else {
+      request = this.productService.getAll();
+    }
 
     request.subscribe({
       next: products => {
@@ -73,6 +80,13 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   }
 
   onCategoryChange(): void {
+    this.loadProducts();
+  }
+
+  onLowStockToggle(): void {
+    if (this.showLowStockOnly) {
+      this.selectedCategory = '';
+    }
     this.loadProducts();
   }
 

@@ -21,6 +21,10 @@ export class ProductService {
     return this.http.get<Product[]>(`${this.apiUrl}/category/${encodeURIComponent(category)}`);
   }
 
+  getLowStock(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}/low-stock`);
+  }
+
   getById(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }

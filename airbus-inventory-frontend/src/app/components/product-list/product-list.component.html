@@ -10,7 +10,7 @@
 
 <div class="container-fluid page-content">
   <div class="row filter-bar align-items-center">
-    <div class="col-md-4 mb-2">
+    <div class="col-md-3 mb-2">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Search by name</mat-label>
         <input matInput placeholder="e.g. Turbine" (input)="applyNameFilter($any($event.target).value)" />
@@ -18,17 +18,23 @@
       </mat-form-field>
     </div>
 
-    <div class="col-md-4 mb-2">
+    <div class="col-md-3 mb-2">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Filter by category</mat-label>
-        <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onCategoryChange()">
+        <mat-select [(ngModel)]="selectedCategory" [disabled]="showLowStockOnly" (selectionChange)="onCategoryChange()">
           <mat-option value="">All categories</mat-option>
           <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
 
-    <div class="col-md-4 mb-2 text-md-end" *ngIf="isAdmin">
+    <div class="col-md-3 mb-2 low-stock-toggle">
+      <mat-slide-toggle [(ngModel)]="showLowStockOnly" (change)="onLowStockToggle()">
+        Low stock only
+      </mat-slide-toggle>
+    </div>
+
+    <div class="col-md-3 mb-2 text-md-end" *ngIf="isAdmin">
       <button mat-raised-button color="primary" (click)="openAddDialog()">
         <mat-icon>add</mat-icon>
         Add Product
