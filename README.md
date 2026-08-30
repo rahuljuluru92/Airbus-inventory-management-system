@@ -26,6 +26,16 @@ airbus-inventory-frontend/    Angular 12 SPA, port 4200
 - **Auth** is stateless JWT: `/api/auth/login` and `/api/auth/register` issue a signed token;
   every other endpoint requires `Authorization: Bearer <token>` and is validated by a custom
   `OncePerRequestFilter` before Spring Security's filter chain.
+- **Authorization** is role-based on top of that: both `ADMIN` and `USER` can read products, but
+  create/update/delete are restricted to `ADMIN` via `@PreAuthorize("hasRole('ADMIN')")` on
+  `ProductService` (method-level security, enabled with `@EnableMethodSecurity`). A `USER` token
+  gets a clean 403 from the same `GlobalExceptionHandler`, not a stack trace. The frontend
+  mirrors this — `ProductListComponent` hides the "Add Product" button and the entire Actions
+  column for non-admins, so the UI never offers an action the backend would reject.
+- **Low-stock tracking** is a small domain-specific feature on top of the existing
+  `reorder_level` column: `GET /api/products/low-stock` returns products where
+  `quantity <= reorder_level`, ordered by how far below reorder level they are. The product
+  table has a "Low stock only" toggle that switches to this endpoint.
 - **Frontend** talks to the backend via absolute URLs (`http://localhost:8080/api/...`), not an
   `ng serve` proxy — see [Frontend setup](#frontend-setup) for why, and why CORS is enabled on
   the backend as a result.
@@ -130,10 +140,10 @@ complexity that isn't the point of this demo. This tradeoff is called out in
 
 Seeded by `data.sql` on every backend startup:
 
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `admin123` | ADMIN |
-| `manager` | `manager123` | USER |
+| Username | Password | Role | Can do |
+|---|---|---|---|
+| `admin` | `admin123` | ADMIN | View + add/edit/delete products |
+| `manager` | `manager123` | USER | View products only (read-only UI, backend 403s on writes) |
 
 ## Deviations from the requested stack (flagged, with reasons)
 
@@ -164,8 +174,14 @@ With MySQL running and both apps started (backend on 8080, frontend on 4200):
 4. Click **Add Product**, fill in the form, submit — it appears in the table.
 5. Click the edit icon on a row, change a field, save — the row updates.
 6. Click the delete icon — a confirmation dialog appears; confirm and the row disappears.
-7. Click **Logout**, then try navigating back to `/products` directly — you're bounced back to
-   `/login` because the token was cleared.
+7. Flip the **Low stock only** toggle — the table narrows to the parts seeded at/below their
+   reorder level (Main Landing Gear Strut Assembly, Combustion Chamber Liner, Turbine Disc); the
+   category filter disables itself while the toggle is on.
+8. Click **Logout**, then log back in as `manager` / `manager123` — notice there's no "Add
+   Product" button and no Actions column at all; the low-stock toggle still works (reading is
+   allowed for both roles).
+9. Click **Logout** again, then try navigating back to `/products` directly — you're bounced
+   back to `/login` because the token was cleared.
 
 ### Via curl (backend only)
 ```bash
@@ -204,6 +220,15 @@ curl -i http://localhost:8080/api/products/$NEW_ID -H "Authorization: Bearer $TO
 curl -i -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" -d '{"username":"admin","password":"wrongpass"}'
 # -> 401, {"status":401,"message":"Invalid username or password","timestamp":"..."}
+
+# 6. Role-based authorization: a USER token can read but not write
+MTOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"manager","password":"manager123"}' | python3 -c "import sys,json;print(json.load(sys.stdin)['token'])")
+curl -i http://localhost:8080/api/products/low-stock -H "Authorization: Bearer $MTOKEN"
+# -> 200, the 3 seeded low-stock parts
+curl -i -X DELETE http://localhost:8080/api/products/1 -H "Authorization: Bearer $MTOKEN"
+# -> 403, {"status":403,"message":"Access denied","timestamp":"..."}
 ```
 
 All of the above was run against this exact build during development — see the commit/PR
