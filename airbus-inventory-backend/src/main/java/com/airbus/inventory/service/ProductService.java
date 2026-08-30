@@ -5,6 +5,7 @@ import com.airbus.inventory.dto.ProductResponse;
 import com.airbus.inventory.exception.ResourceNotFoundException;
 import com.airbus.inventory.model.Product;
 import com.airbus.inventory.repository.ProductRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,12 +33,14 @@ public class ProductService {
         return toResponse(product);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse create(ProductRequest request) {
         Product product = toModel(request);
         Product saved = productRepository.save(product);
         return toResponse(saved);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse update(Long id, ProductRequest request) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found with id " + id);
@@ -47,6 +50,7 @@ public class ProductService {
         return findById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(Long id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found with id " + id);
