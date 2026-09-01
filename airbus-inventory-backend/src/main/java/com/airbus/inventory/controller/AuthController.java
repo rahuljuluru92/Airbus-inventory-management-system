@@ -2,6 +2,7 @@ package com.airbus.inventory.controller;
 
 import com.airbus.inventory.dto.AuthResponse;
 import com.airbus.inventory.dto.LoginRequest;
+import com.airbus.inventory.dto.RefreshRequest;
 import com.airbus.inventory.dto.RegisterRequest;
 import com.airbus.inventory.service.AuthService;
 import jakarta.validation.Valid;
@@ -31,5 +32,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        return ResponseEntity.ok(authService.refresh(request));
     }
 }

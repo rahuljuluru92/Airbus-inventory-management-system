@@ -2,8 +2,10 @@ package com.airbus.inventory.service;
 
 import com.airbus.inventory.dto.AuthResponse;
 import com.airbus.inventory.dto.LoginRequest;
+import com.airbus.inventory.dto.RefreshRequest;
 import com.airbus.inventory.dto.RegisterRequest;
 import com.airbus.inventory.exception.DuplicateUsernameException;
+import com.airbus.inventory.exception.InvalidTokenException;
 import com.airbus.inventory.model.User;
 import com.airbus.inventory.repository.UserRepository;
 import com.airbus.inventory.security.JwtUtil;
@@ -43,8 +45,7 @@ public class AuthService {
         user.setRole(request.getRole() == null || request.getRole().isBlank() ? "USER" : request.getRole());
 
         User saved = userRepository.save(user);
-        String token = jwtUtil.generateToken(saved.getUsername(), saved.getRole());
-        return new AuthResponse(token, saved.getUsername(), saved.getRole(), jwtExpirationMs);
+        return issueTokens(saved);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -52,7 +53,36 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        return issueTokens(user);
+    }
+
+    public AuthResponse refresh(RefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            throw new InvalidTokenException("Invalid or expired refresh token");
+        }
+
+        String username;
+        try {
+            username = jwtUtil.extractUsername(refreshToken);
+        } catch (Exception ex) {
+            throw new InvalidTokenException("Invalid or expired refresh token");
+        }
+
+        if (username == null || !jwtUtil.isTokenValid(refreshToken, username)) {
+            throw new InvalidTokenException("Invalid or expired refresh token");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidTokenException("Invalid or expired refresh token"));
+
+        return issueTokens(user);
+    }
+
+    private AuthResponse issueTokens(User user) {
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
-        return new AuthResponse(token, user.getUsername(), user.getRole(), jwtExpirationMs);
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+        return new AuthResponse(token, refreshToken, user.getUsername(), user.getRole(), jwtExpirationMs);
     }
 }

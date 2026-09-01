@@ -18,13 +18,19 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
+    private static final String CLAIM_TYPE = "type";
+    private static final String TYPE_REFRESH = "refresh";
+
     private final Key signingKey;
     private final long expirationMs;
+    private final long refreshExpirationMs;
 
     public JwtUtil(@Value("${jwt.secret}") String secret,
-                    @Value("${jwt.expiration-ms}") long expirationMs) {
+                    @Value("${jwt.expiration-ms}") long expirationMs,
+                    @Value("${jwt.refresh-expiration-ms}") long refreshExpirationMs) {
         this.signingKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
         this.expirationMs = expirationMs;
+        this.refreshExpirationMs = refreshExpirationMs;
     }
 
     public String generateToken(String username, String role) {
@@ -40,6 +46,30 @@ public class JwtUtil {
                 .setExpiration(expiry)
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(CLAIM_TYPE, TYPE_REFRESH);
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + refreshExpirationMs);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public long getRefreshExpirationMs() {
+        return refreshExpirationMs;
+    }
+
+    public boolean isRefreshToken(String token) {
+        String type = extractAllClaims(token).get(CLAIM_TYPE, String.class);
+        return TYPE_REFRESH.equals(type);
     }
 
     public String extractUsername(String token) {

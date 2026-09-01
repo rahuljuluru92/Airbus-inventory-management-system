@@ -51,6 +51,11 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.UNAUTHORIZED, "Invalid username or password");
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidToken(InvalidTokenException ex) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException ex) {
         return build(HttpStatus.UNAUTHORIZED, "Authentication failed");
