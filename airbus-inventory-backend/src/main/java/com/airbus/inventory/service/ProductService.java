@@ -1,5 +1,6 @@
 package com.airbus.inventory.service;
 
+import com.airbus.inventory.dto.PageResponse;
 import com.airbus.inventory.dto.ProductRequest;
 import com.airbus.inventory.dto.ProductResponse;
 import com.airbus.inventory.exception.ResourceNotFoundException;
@@ -20,8 +21,14 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<ProductResponse> findAll() {
-        return productRepository.findAll().stream().map(this::toResponse).toList();
+    public PageResponse<ProductResponse> findAllPaged(int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 100);
+
+        List<ProductResponse> content = productRepository.findPage(safePage * safeSize, safeSize).stream()
+                .map(this::toResponse).toList();
+        long total = productRepository.count();
+        return new PageResponse<>(content, safePage, safeSize, total);
     }
 
     public List<ProductResponse> findByCategory(String category) {

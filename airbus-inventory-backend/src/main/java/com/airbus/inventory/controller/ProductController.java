@@ -1,5 +1,6 @@
 package com.airbus.inventory.controller;
 
+import com.airbus.inventory.dto.PageResponse;
 import com.airbus.inventory.dto.ProductRequest;
 import com.airbus.inventory.dto.ProductResponse;
 import com.airbus.inventory.service.ProductService;
@@ -21,8 +22,10 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductResponse> getAll() {
-        return productService.findAll();
+    public PageResponse<ProductResponse> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return productService.findAllPaged(page, size);
     }
 
     @GetMapping("/category/{category}")

@@ -34,8 +34,14 @@ public class ProductRepository {
             rs.getTimestamp("last_updated").toLocalDateTime()
     );
 
-    public List<Product> findAll() {
-        return jdbcTemplate.query("SELECT * FROM products ORDER BY id", ROW_MAPPER);
+    public List<Product> findPage(int offset, int limit) {
+        return jdbcTemplate.query(
+                "SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?", ROW_MAPPER, limit, offset);
+    }
+
+    public long count() {
+        Long total = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM products", Long.class);
+        return total != null ? total : 0L;
     }
 
     public List<Product> findByCategory(String category) {
