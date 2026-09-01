@@ -1,4 +1,7 @@
 <h2 mat-dialog-title>{{ isEdit ? 'Edit Product' : 'Add Product' }}</h2>
+<p class="audit-info" *ngIf="isEdit && data.product">
+  Added by {{ data.product.createdBy }} · last updated by {{ data.product.updatedBy }}
+</p>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="product-form">

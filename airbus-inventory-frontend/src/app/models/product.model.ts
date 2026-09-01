@@ -6,7 +6,9 @@ export interface Product {
   unitPrice: number;
   supplier: string;
   reorderLevel: number;
+  createdBy: string;
+  updatedBy: string;
   lastUpdated: string;
 }
 
-export type ProductRequest = Omit<Product, 'id' | 'lastUpdated'>;
+export type ProductRequest = Omit<Product, 'id' | 'createdBy' | 'updatedBy' | 'lastUpdated'>;
