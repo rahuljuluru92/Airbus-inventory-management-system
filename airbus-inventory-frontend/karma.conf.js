@@ -39,6 +39,12 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['Chrome'],
     singleRun: false,
-    restartOnFileChange: true
+    // false, not the CLI-generated default of true: under `ng test --watch=false` this build
+    // still triggers a benign post-run rebuild that Karma logs as "did a full page reload"
+    // (a known Angular 12/Karma artifact) even though every spec already passed — check the
+    // "TOTAL: N SUCCESS" line and exit code, not that trailing log line. Setting this false
+    // doesn't fix the noise, but it's the more correct setting for non-interactive/CI runs
+    // regardless, and doesn't change normal `ng test` watch-mode behavior on a file save.
+    restartOnFileChange: false
   });
 };
