@@ -9,6 +9,38 @@
 </mat-toolbar>
 
 <div class="container-fluid page-content">
+  <div class="row summary-tiles" *ngIf="summary">
+    <div class="col-md-3 mb-2">
+      <mat-card class="stat-card">
+        <div class="stat-value">{{ summary.totalProducts }}</div>
+        <div class="stat-label">Total Products</div>
+      </mat-card>
+    </div>
+    <div class="col-md-3 mb-2">
+      <mat-card class="stat-card">
+        <div class="stat-value">{{ summary.totalInventoryValue | currency:'USD':'symbol':'1.0-0' }}</div>
+        <div class="stat-label">Inventory Value</div>
+      </mat-card>
+    </div>
+    <div class="col-md-3 mb-2">
+      <mat-card
+        class="stat-card"
+        [class.stat-card-warn]="summary.lowStockCount > 0"
+        [class.stat-card-clickable]="summary.lowStockCount > 0"
+        (click)="summary.lowStockCount > 0 && showLowStockFromTile()"
+      >
+        <div class="stat-value">{{ summary.lowStockCount }}</div>
+        <div class="stat-label">Low Stock Items</div>
+      </mat-card>
+    </div>
+    <div class="col-md-3 mb-2">
+      <mat-card class="stat-card">
+        <div class="stat-value">{{ summary.byCategory.length }}</div>
+        <div class="stat-label">Categories</div>
+      </mat-card>
+    </div>
+  </div>
+
   <div class="row filter-bar align-items-center">
     <div class="col-md-3 mb-2">
       <mat-form-field appearance="outline" class="w-100">

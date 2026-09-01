@@ -5,7 +5,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Product } from '../../models/product.model';
+import { InventorySummary, Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { ProductFormComponent, PRODUCT_CATEGORIES } from '../product-form/product-form.component';
@@ -26,6 +26,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   errorMessage: string | null = null;
   isAdmin = false;
   displayedColumns: string[] = [];
+  summary: InventorySummary | null = null;
 
   // Pagination only applies to the "all products, no filters" view — /category and /low-stock
   // are smaller, targeted result sets returned unpaginated by the backend (see decisions.md).
@@ -50,6 +51,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     const baseColumns = ['name', 'category', 'quantity', 'unitPrice', 'supplier', 'reorderLevel'];
     this.displayedColumns = this.isAdmin ? [...baseColumns, 'actions'] : baseColumns;
     this.loadProducts();
+    this.loadSummary();
   }
 
   ngAfterViewInit(): void {
@@ -93,6 +95,13 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  loadSummary(): void {
+    this.productService.getSummary().subscribe({
+      next: summary => this.summary = summary,
+      error: () => { /* non-critical for the stat tiles; ignore */ }
+    });
+  }
+
   onCategoryChange(): void {
     this.pageIndex = 0;
     this.loadProducts();
@@ -104,6 +113,11 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     }
     this.pageIndex = 0;
     this.loadProducts();
+  }
+
+  showLowStockFromTile(): void {
+    this.showLowStockOnly = true;
+    this.onLowStockToggle();
   }
 
   onPageChange(event: PageEvent): void {
@@ -122,6 +136,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
       if (result) {
         this.snackBar.open('Product added', 'Close', { duration: 3000 });
         this.loadProducts();
+        this.loadSummary();
       }
     });
   }
@@ -132,6 +147,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
       if (result) {
         this.snackBar.open('Product updated', 'Close', { duration: 3000 });
         this.loadProducts();
+        this.loadSummary();
       }
     });
   }
@@ -150,6 +166,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
           next: () => {
             this.snackBar.open('Product deleted', 'Close', { duration: 3000 });
             this.loadProducts();
+            this.loadSummary();
           },
           error: () => {
             this.snackBar.open('Failed to delete product', 'Close', { duration: 3000 });

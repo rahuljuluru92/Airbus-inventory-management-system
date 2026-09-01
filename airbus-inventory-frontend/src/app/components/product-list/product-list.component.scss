@@ -12,6 +12,45 @@
   padding: 24px;
 }
 
+.summary-tiles {
+  margin-bottom: 8px;
+}
+
+.stat-card {
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-card-warn {
+  background: #fdecea;
+
+  .stat-value {
+    color: #c62828;
+  }
+}
+
+.stat-card-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.15s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
 .filter-bar {
   margin-bottom: 8px;
 }

@@ -20,3 +20,15 @@ export interface PageResponse<T> {
   totalElements: number;
   totalPages: number;
 }
+
+export interface CategoryCount {
+  category: string;
+  count: number;
+}
+
+export interface InventorySummary {
+  totalProducts: number;
+  totalInventoryValue: number;
+  lowStockCount: number;
+  byCategory: CategoryCount[];
+}
