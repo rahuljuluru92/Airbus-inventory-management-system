@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -27,7 +27,15 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   isAdmin = false;
   displayedColumns: string[] = [];
 
+  // Pagination only applies to the "all products, no filters" view — /category and /low-stock
+  // are smaller, targeted result sets returned unpaginated by the backend (see decisions.md).
+  pageIndex = 0;
+  pageSize = 50;
+  pageSizeOptions = [10, 20, 50];
+  totalElements = 0;
+
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private productService: ProductService,
@@ -54,32 +62,39 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     return this.authService.getUsername();
   }
 
+  /** True when the currently loaded list is server-side paginated (the plain "all products" view). */
+  get isServerPaginated(): boolean {
+    return !this.showLowStockOnly && !this.selectedCategory;
+  }
+
   loadProducts(): void {
     this.loading = true;
     this.errorMessage = null;
 
-    let request: Observable<Product[]>;
     if (this.showLowStockOnly) {
-      request = this.productService.getLowStock();
+      this.productService.getLowStock().subscribe({
+        next: products => this.applyUnpagedResult(products),
+        error: () => this.handleLoadError()
+      });
     } else if (this.selectedCategory) {
-      request = this.productService.getByCategory(this.selectedCategory);
+      this.productService.getByCategory(this.selectedCategory).subscribe({
+        next: products => this.applyUnpagedResult(products),
+        error: () => this.handleLoadError()
+      });
     } else {
-      request = this.productService.getAll();
+      this.productService.getAll(this.pageIndex, this.pageSize).subscribe({
+        next: page => {
+          this.dataSource.data = page.content;
+          this.totalElements = page.totalElements;
+          this.loading = false;
+        },
+        error: () => this.handleLoadError()
+      });
     }
-
-    request.subscribe({
-      next: products => {
-        this.dataSource.data = products;
-        this.loading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Failed to load products.';
-        this.loading = false;
-      }
-    });
   }
 
   onCategoryChange(): void {
+    this.pageIndex = 0;
     this.loadProducts();
   }
 
@@ -87,6 +102,13 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     if (this.showLowStockOnly) {
       this.selectedCategory = '';
     }
+    this.pageIndex = 0;
+    this.loadProducts();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
     this.loadProducts();
   }
 
@@ -140,5 +162,16 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  private applyUnpagedResult(products: Product[]): void {
+    this.dataSource.data = products;
+    this.totalElements = products.length;
+    this.loading = false;
+  }
+
+  private handleLoadError(): void {
+    this.errorMessage = 'Failed to load products.';
+    this.loading = false;
   }
 }

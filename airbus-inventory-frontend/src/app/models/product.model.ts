@@ -12,3 +12,11 @@ export interface Product {
 }
 
 export type ProductRequest = Omit<Product, 'id' | 'createdBy' | 'updatedBy' | 'lastUpdated'>;
+
+export interface PageResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
