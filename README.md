@@ -101,23 +101,23 @@ all working together.
 ```
                         ┌─────────────────────────────┐
   Browser  ───────────► │   Angular 12 SPA (:4200)    │
-                        │   LoginComponent, Register,  │
-                        │   ProductListComponent, ...  │
-                        └──────────────┬───────────────┘
+                        │   LoginComponent, Register, │
+                        │   ProductListComponent, ... │
+                        └──────────────┬──────────────┘
                                        │ HttpClient + AuthInterceptor
                                        │ (attaches JWT, retries on 401)
                                        ▼
                         ┌─────────────────────────────┐
-                        │  Spring Boot API (:8080)     │
-                        │  JwtAuthFilter → Controller   │
-                        │  → Service → Repository       │
-                        │  (JdbcTemplate)                │
-                        └──────────────┬───────────────┘
+                        │  Spring Boot API (:8080)    │
+                        │  JwtAuthFilter → Controller │
+                        │  → Service → Repository     │
+                        │  (JdbcTemplate)             │
+                        └──────────────┬──────────────┘
                                        │ JDBC
                                        ▼
                         ┌─────────────────────────────┐
-                        │       MySQL 8 (:3306)        │
-                        │  products, users tables       │
+                        │       MySQL 8 (:3306)       │
+                        │  products, users tables     │
                         └─────────────────────────────┘
 ```
 
