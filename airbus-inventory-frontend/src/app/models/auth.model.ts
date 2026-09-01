@@ -9,8 +9,13 @@ export interface RegisterRequest {
   role?: string;
 }
 
+export interface RefreshRequest {
+  refreshToken: string;
+}
+
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
   username: string;
   role: string;
   expiresInMs: number;
