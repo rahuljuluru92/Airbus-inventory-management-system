@@ -6,6 +6,7 @@ import com.airbus.inventory.exception.ResourceNotFoundException;
 import com.airbus.inventory.model.Product;
 import com.airbus.inventory.repository.ProductRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +41,9 @@ public class ProductService {
     @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse create(ProductRequest request) {
         Product product = toModel(request);
+        String username = currentUsername();
+        product.setCreatedBy(username);
+        product.setUpdatedBy(username);
         Product saved = productRepository.save(product);
         return toResponse(saved);
     }
@@ -50,6 +54,7 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with id " + id);
         }
         Product product = toModel(request);
+        product.setUpdatedBy(currentUsername());
         productRepository.update(id, product);
         return findById(id);
     }
@@ -75,6 +80,11 @@ public class ProductService {
 
     private ProductResponse toResponse(Product p) {
         return new ProductResponse(p.getId(), p.getName(), p.getCategory(), p.getQuantity(),
-                p.getUnitPrice(), p.getSupplier(), p.getReorderLevel(), p.getLastUpdated());
+                p.getUnitPrice(), p.getSupplier(), p.getReorderLevel(), p.getCreatedBy(), p.getUpdatedBy(),
+                p.getLastUpdated());
+    }
+
+    private String currentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

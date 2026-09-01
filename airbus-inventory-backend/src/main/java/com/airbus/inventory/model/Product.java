@@ -12,13 +12,16 @@ public class Product {
     private BigDecimal unitPrice;
     private String supplier;
     private Integer reorderLevel;
+    private String createdBy;
+    private String updatedBy;
     private LocalDateTime lastUpdated;
 
     public Product() {
     }
 
     public Product(Long id, String name, String category, Integer quantity, BigDecimal unitPrice,
-                   String supplier, Integer reorderLevel, LocalDateTime lastUpdated) {
+                   String supplier, Integer reorderLevel, String createdBy, String updatedBy,
+                   LocalDateTime lastUpdated) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -26,6 +29,8 @@ public class Product {
         this.unitPrice = unitPrice;
         this.supplier = supplier;
         this.reorderLevel = reorderLevel;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
         this.lastUpdated = lastUpdated;
     }
 
@@ -83,6 +88,22 @@ public class Product {
 
     public void setReorderLevel(Integer reorderLevel) {
         this.reorderLevel = reorderLevel;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 
     public LocalDateTime getLastUpdated() {

@@ -29,6 +29,8 @@ public class ProductRepository {
             rs.getBigDecimal("unit_price"),
             rs.getString("supplier"),
             rs.getInt("reorder_level"),
+            rs.getString("created_by"),
+            rs.getString("updated_by"),
             rs.getTimestamp("last_updated").toLocalDateTime()
     );
 
@@ -58,8 +60,8 @@ public class ProductRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO products (name, category, quantity, unit_price, supplier, reorder_level) " +
-                            "VALUES (?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO products (name, category, quantity, unit_price, supplier, reorder_level, " +
+                            "created_by, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, product.getName());
             ps.setString(2, product.getCategory());
@@ -67,6 +69,8 @@ public class ProductRepository {
             ps.setBigDecimal(4, product.getUnitPrice());
             ps.setString(5, product.getSupplier());
             ps.setInt(6, product.getReorderLevel());
+            ps.setString(7, product.getCreatedBy());
+            ps.setString(8, product.getUpdatedBy());
             return ps;
         }, keyHolder);
 
@@ -77,9 +81,9 @@ public class ProductRepository {
     public int update(Long id, Product product) {
         return jdbcTemplate.update(
                 "UPDATE products SET name = ?, category = ?, quantity = ?, unit_price = ?, " +
-                        "supplier = ?, reorder_level = ? WHERE id = ?",
+                        "supplier = ?, reorder_level = ?, updated_by = ? WHERE id = ?",
                 product.getName(), product.getCategory(), product.getQuantity(), product.getUnitPrice(),
-                product.getSupplier(), product.getReorderLevel(), id);
+                product.getSupplier(), product.getReorderLevel(), product.getUpdatedBy(), id);
     }
 
     public int deleteById(Long id) {

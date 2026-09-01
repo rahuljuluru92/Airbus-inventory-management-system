@@ -20,6 +20,8 @@ CREATE TABLE products (
     unit_price DECIMAL(12, 2) NOT NULL,
     supplier VARCHAR(150),
     reorder_level INT NOT NULL DEFAULT 0,
+    created_by VARCHAR(50) NOT NULL DEFAULT 'system',
+    updated_by VARCHAR(50) NOT NULL DEFAULT 'system',
     last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_products_category (category)
 );
