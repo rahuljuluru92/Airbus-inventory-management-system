@@ -25,6 +25,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductFormComponent } from './components/product-form/product-form.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { RegisterComponent } from './components/register/register.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     LoginComponent,
     ProductListComponent,
     ProductFormComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

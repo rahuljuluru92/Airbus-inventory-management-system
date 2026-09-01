@@ -1,0 +1,65 @@
+<div class="login-wrapper d-flex align-items-center justify-content-center">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Create Account</mat-card-title>
+      <mat-card-subtitle>Register to browse the aircraft parts inventory</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" autocomplete="username" />
+          <mat-error *ngIf="form.get('username')?.hasError('required')">Username is required</mat-error>
+          <mat-error *ngIf="form.get('username')?.hasError('minlength')">Username must be at least 3 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Toggle password visibility'"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="form.get('password')?.hasError('minlength')">Password must be at least 6 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
+          <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">Please confirm your password</mat-error>
+        </mat-form-field>
+
+        <!-- Cross-field validator error: mat-error only reacts to its own control's error
+             state, not the parent FormGroup's, so this can't live inside a mat-form-field. -->
+        <div
+          class="alert alert-danger py-2"
+          *ngIf="form.hasError('passwordMismatch') && !form.get('confirmPassword')?.hasError('required')"
+        >
+          Passwords do not match
+        </div>
+
+        <div class="alert alert-danger py-2" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <button mat-raised-button color="primary" type="submit" class="w-100" [disabled]="submitting">
+          {{ submitting ? 'Creating account...' : 'Create account' }}
+        </button>
+      </form>
+
+      <p class="demo-hint mt-3 mb-0">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>
