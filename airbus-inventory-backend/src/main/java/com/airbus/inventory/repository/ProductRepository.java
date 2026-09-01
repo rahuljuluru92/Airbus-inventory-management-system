@@ -1,5 +1,6 @@
 package com.airbus.inventory.repository;
 
+import com.airbus.inventory.dto.CategoryCountResponse;
 import com.airbus.inventory.model.Product;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -100,5 +102,23 @@ public class ProductRepository {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM products WHERE id = ?", Integer.class, id);
         return count != null && count > 0;
+    }
+
+    public BigDecimal totalInventoryValue() {
+        BigDecimal total = jdbcTemplate.queryForObject(
+                "SELECT COALESCE(SUM(quantity * unit_price), 0) FROM products", BigDecimal.class);
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    public long countLowStock() {
+        Long total = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM products WHERE quantity <= reorder_level", Long.class);
+        return total != null ? total : 0L;
+    }
+
+    public List<CategoryCountResponse> countByCategory() {
+        return jdbcTemplate.query(
+                "SELECT category, COUNT(*) AS cnt FROM products GROUP BY category ORDER BY category",
+                (rs, rowNum) -> new CategoryCountResponse(rs.getString("category"), rs.getLong("cnt")));
     }
 }

@@ -1,5 +1,6 @@
 package com.airbus.inventory.service;
 
+import com.airbus.inventory.dto.InventorySummaryResponse;
 import com.airbus.inventory.dto.PageResponse;
 import com.airbus.inventory.dto.ProductRequest;
 import com.airbus.inventory.dto.ProductResponse;
@@ -37,6 +38,14 @@ public class ProductService {
 
     public List<ProductResponse> findLowStock() {
         return productRepository.findLowStock().stream().map(this::toResponse).toList();
+    }
+
+    public InventorySummaryResponse getSummary() {
+        return new InventorySummaryResponse(
+                productRepository.count(),
+                productRepository.totalInventoryValue(),
+                productRepository.countLowStock(),
+                productRepository.countByCategory());
     }
 
     public ProductResponse findById(Long id) {

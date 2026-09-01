@@ -1,5 +1,6 @@
 package com.airbus.inventory.controller;
 
+import com.airbus.inventory.dto.InventorySummaryResponse;
 import com.airbus.inventory.dto.PageResponse;
 import com.airbus.inventory.dto.ProductRequest;
 import com.airbus.inventory.dto.ProductResponse;
@@ -36,6 +37,11 @@ public class ProductController {
     @GetMapping("/low-stock")
     public List<ProductResponse> getLowStock() {
         return productService.findLowStock();
+    }
+
+    @GetMapping("/summary")
+    public InventorySummaryResponse getSummary() {
+        return productService.getSummary();
     }
 
     @GetMapping("/{id}")
