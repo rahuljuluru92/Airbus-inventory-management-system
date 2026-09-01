@@ -42,7 +42,9 @@ public class AuthService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole() == null || request.getRole().isBlank() ? "USER" : request.getRole());
+        // /api/auth/register is unauthenticated (permitAll) — always USER, never trust a
+        // client-supplied role here, or anyone could self-register as ADMIN.
+        user.setRole("USER");
 
         User saved = userRepository.save(user);
         return issueTokens(saved);
